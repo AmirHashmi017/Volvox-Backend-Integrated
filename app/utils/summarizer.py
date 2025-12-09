@@ -47,6 +47,23 @@ async def SummarizeResearch(documents:List[str]):
         return result
     except Exception as e:
         return str(e)
+    
+async def SummarizeTextResearch(content:str):
+    try:
+        prompt= PromptTemplate(
+        template="""
+        You are a helpful AI Assistant summarize this {content}
+        """,
+        input_variables=['content']
+        )
+        llm= ChatGoogleGenerativeAI(model='gemini-2.5-flash')
+        parser= StrOutputParser()
+        summarize_chain= prompt | llm | parser
+
+        result= await summarize_chain.ainvoke(content)
+        return result
+    except Exception as e:
+        return str(e)
 
 async def SummarizeVideo(video_url:str):
     try:

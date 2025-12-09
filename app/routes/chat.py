@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Depends, File, Form, Query
 from fastapi.responses import StreamingResponse
 from app.utils.rag_utils import generateResponse
-from app.utils.summarizer import SummarizeResearch, SummarizeVideo
+from app.utils.summarizer import SummarizeResearch, SummarizeVideo, SummarizeTextResearch
 
 from app.models.chatHistory import Message
 
@@ -17,6 +17,9 @@ from pydantic import BaseModel
 class SummarizeBody(BaseModel):
     documents: list[str]
 
+class SummarizeTextBody(BaseModel):
+    content: str
+
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
 @router.post('/ask', response_model=dict, status_code=status.HTTP_200_OK)
@@ -25,9 +28,9 @@ async def askLLM(
     question: str= Query(...),
     chat_id: Optional[str]= Query(None),
     document_id: Optional[str]= Query(None),
-    
+    web_search: Optional[bool]= False
 ):
-    response= await generateResponse(question,chat_id,document_id)
+    response= await generateResponse(question,chat_id,document_id,web_search)
     chatHistory= await get_collection(settings.CHATHISTORY_COLLECTION)
     new_message = Message(
         question=question,
@@ -125,6 +128,13 @@ async def summarizeResearch(
         body: SummarizeBody
         ):
     summary= await SummarizeResearch(body.documents)
+    return summary
+
+@router.post('/summarize-research-text',response_model=str,status_code=status.HTTP_200_OK)
+async def summarizeResearch(
+        body: SummarizeTextBody
+        ):
+    summary= await SummarizeTextResearch(body.content)
     return summary
 
 @router.post('/summarize-video',response_model=str,status_code=status.HTTP_200_OK)
