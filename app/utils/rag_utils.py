@@ -180,7 +180,7 @@ async def generateResponse(question,chat_id=None,document_id=None,web_search=Fal
     chat_messages.append(HumanMessage(content=question))
 
     response=""
-    llm= ChatGoogleGenerativeAI(model='gemini-2.5-flash')
+    llm= ChatGoogleGenerativeAI(model='gemini-2.5-flash-lite')
     parser= StrOutputParser()
     final_chain= llm | parser
     response= final_chain.invoke(chat_messages)

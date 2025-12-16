@@ -39,7 +39,7 @@ async def SummarizeResearch(documents:List[str]):
         """,
         input_variables=['content']
         )
-        llm= ChatGoogleGenerativeAI(model='gemini-2.5-flash')
+        llm= ChatGoogleGenerativeAI(model='gemini-2.5-flash-lite')
         parser= StrOutputParser()
         summarize_chain= prompt | llm | parser
 
