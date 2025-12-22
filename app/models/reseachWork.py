@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, ConfigDict, field_validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator, field_serializer
 from typing import Optional
 from datetime import datetime, timezone
 
@@ -21,3 +21,24 @@ class ResearchModel(BaseModel):
         if v is None:
             return v
         return str(v)
+
+    @field_validator("createdAt", mode="before")
+    @classmethod
+    def ensure_utc_timezone(cls, v):
+        if isinstance(v, datetime):
+            if v.tzinfo is None:
+                # Assume naive datetime is UTC
+                return v.replace(tzinfo=timezone.utc)
+            else:
+                # Convert to UTC if it has timezone info
+                return v.astimezone(timezone.utc)
+        return v
+
+    @field_serializer("createdAt")
+    def serialize_datetime(self, value: datetime) -> str:
+        # Ensure the datetime is in UTC and serialize with 'Z' suffix
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        else:
+            value = value.astimezone(timezone.utc)
+        return value.isoformat().replace('+00:00', 'Z')

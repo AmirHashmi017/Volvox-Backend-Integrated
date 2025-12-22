@@ -1,6 +1,6 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_serializer
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 class createResearch(BaseModel):
     researchName: str 
@@ -21,3 +21,11 @@ class ResearchResponse(BaseModel):
 
     class Config:
         populate_by_name = True
+
+    @field_serializer("createdAt")
+    def serialize_datetime(self, value: datetime) -> str:
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        else:
+            value = value.astimezone(timezone.utc)
+        return value.isoformat().replace('+00:00', 'Z')
