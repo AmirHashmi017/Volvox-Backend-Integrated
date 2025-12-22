@@ -219,7 +219,7 @@ async def list_research(
 
 
 @router.get("/file/{file_id}")
-async def download_file(file_id: str, user_id: str = Query(..., alias="user_id")):
+async def download_file(file_id: str):
     bucket = await get_gridfs_bucket()
 
     try:
@@ -228,8 +228,6 @@ async def download_file(file_id: str, user_id: str = Query(..., alias="user_id")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
 
     metadata = getattr(grid_out, "metadata", {}) or {}
-    if metadata.get("userId") and metadata.get("userId") != str(user_id):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to access this file")
 
     async def file_iterator() -> AsyncGenerator[bytes, None]:
         while True:
