@@ -27,16 +27,13 @@ class ResearchModel(BaseModel):
     def ensure_utc_timezone(cls, v):
         if isinstance(v, datetime):
             if v.tzinfo is None:
-                # Assume naive datetime is UTC
                 return v.replace(tzinfo=timezone.utc)
             else:
-                # Convert to UTC if it has timezone info
                 return v.astimezone(timezone.utc)
         return v
 
     @field_serializer("createdAt")
     def serialize_datetime(self, value: datetime) -> str:
-        # Ensure the datetime is in UTC and serialize with 'Z' suffix
         if value.tzinfo is None:
             value = value.replace(tzinfo=timezone.utc)
         else:
