@@ -4,8 +4,8 @@ emoji: 👁
 colorFrom: green
 colorTo: red
 sdk: docker
+app_port: 7860
 pinned: false
-short_description: Backend of my Volvox Application
 ---
 
 ## Volvox – Personalized AI Assistant for Researchers
