@@ -116,7 +116,7 @@ async def get_vector_store_retriever(document_content:str):
         chunk_overlap=200,
     )
     chunks= splitter.create_documents([document_content])
-    embedding = GoogleGenerativeAIEmbeddings(model="text-embedding-004")
+    embedding = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
     vector_store= FAISS.from_documents(
         documents=chunks,
         embedding=embedding
